@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="cn.com.mrs.zhao.dao.SysPersonMapper">  
+  
+  	<resultMap id="BaseResultMap" type="SysPerson" >
+	    <id column="ID" property="id"/>
+	    <result column="PERSON_NAME" property="personName"/>
+	    <result column="EXPIRE_TIME" property="expireTime"/>
+	    <result column="TOTAL_MOUNT" property="totalMount"/>
+	    <result column="CREATE_TIME" property="createTime"/>
+	    <result column="ROOM_NO" property="roomNo"/>
+	    <result column="DEPOSIT" property="deposit"/>
+	    <result column="TWO_MONTH_MOUNT" property="twoMonthMount"/>
+	    <result column="ISBACK" property="isBack"/>
+  	</resultMap>
+    
+  	<insert id="insertSysPerson" parameterType="SysPerson">
+  		<selectKey keyProperty="id" order="BEFORE" resultType="long">
+  			select SYS_PERSON_SEQ.nextval from dual
+ 		</selectKey>  
+      	insert into sys_person
+      	values(#{id},#{personName},#{deposit},#{totalMount},#{createTime},#{roomNo},
+      	#{twoMonthMount},#{expireTime},#{isBack})
+  	</insert>
+    
+    <select id="HandleSysPersonData" resultMap="BaseResultMap" >
+    	select * from sys_person
+    </select>
+    
+    <update id="updateSysPerson" parameterType="SysPerson">
+    	update sys_person
+  		<set >  
+      		<if test="personName != null" >  
+        		PERSON_NAME = #{personName},  
+      		</if>  
+      		<if test="expireTime != null" >  
+        		EXPIRE_TIME = #{expireTime},  
+      		</if>
+      		<if test="totalMount != null" >  
+        		TOTAL_MOUNT = #{totalMount},  
+      		</if>  
+	      	<if test="createTime != null" >  
+	        	CREATE_TIME = #{createTime},  
+	      	</if>  
+      		<if test="roomNo != null" >  
+        		ROOM_NO = #{roomNo},  
+      		</if>  
+      		<if test="deposit != null" >  
+        		DEPOSIT = #{deposit},  
+      		</if>  
+      		<if test="twoMonthMount != null" >  
+        		TWO_MONTH_MOUNT = #{twoMonthMount},  
+      		</if> 
+      		<if test="isBack != null" >  
+        		ISBACK = #{isBack},  
+      		</if>  
+    	</set>  
+    	where ID = #{id}  
+    </update>
+    
+    <delete id="delSysPerson" parameterType="Long">
+    	delete from sys_person where ID = #{id}
+    </delete>
+    
+    <select id="selectCountSysPerson" resultType="int" parameterType="Map">
+    	select count(*) from sys_person where 1=1
+    	<if test="personName != null">
+    		<![CDATA[AND PERSON_NAME like '%${personName}%']]>
+    	</if>
+    	<if test="roomNo!= null">  
+	        <![CDATA[AND ROOM_NO = #{roomNo}]]>
+	    </if>
+	    <if test="expireTime!= null">  
+	        <![CDATA[AND EXPIRE_TIME = #{expireTime}]]>
+	    </if>
+	    <if test="id != null">
+    		<![CDATA[AND ID = #{id}]]>
+    	</if>
+    </select>
+    
+    <select id="selectListSysPerson"  parameterType="Map" resultMap="BaseResultMap">
+		SELECT * FROM (SELECT A.*, ROWNUM RN FROM 
+	    (SELECT * FROM SYS_PERSON WHERE 1=1 
+	    <if test="personName!= null">  
+	        <![CDATA[AND PERSON_NAME like '%${personName}%']]>
+	    </if>
+	    <if test="roomNo!= null">  
+	        <![CDATA[AND ROOM_NO = #{roomNo}]]>
+	    </if>
+	    <if test="expireTime!= null">  
+	        <![CDATA[AND EXPIRE_TIME = #{expireTime}]]>
+	    </if>
+	    <if test="id != null">
+    		<![CDATA[AND ID = #{id}]]>
+    	</if>
+	    <![CDATA[ORDER BY CREATE_TIME DESC ) A WHERE ROWNUM <= #{stop})
+		WHERE RN >= #{start}]]>
+    </select>
+</mapper>

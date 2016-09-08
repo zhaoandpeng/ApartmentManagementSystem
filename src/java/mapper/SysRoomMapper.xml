@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="cn.com.mrs.zhao.dao.SysRoomMapper">  
+  <resultMap id="BaseResultMap" type="SysRoom">
+    <id column="ID" property="id"/>
+    <result column="ROOMNO" property="roomNo"/>
+    <result column="ROOMTYPE" property="roomType"/>
+    <result column="ROOMSTATUS" property="roomStatus"/>
+    <result column="ROOMREALNUMBER" property="roomRealNumber"/>
+  </resultMap>
+  
+  <insert id="addRoom" parameterType="SysRoom">
+  		<selectKey keyProperty="id" order="BEFORE" resultType="long">
+  			select SYS_ROOM_SEQ.nextval from dual
+ 		</selectKey>
+  		insert into sys_room values
+  		(#{id},#{roomNo},#{roomType},#{roomStatus},#{roomRealNumber})
+  </insert>
+  
+  <select id="selectCountSysRoom" resultType="int" parameterType="Map">
+  		select count(*) from sys_room where 1=1
+  		<if test="roomNo!= null">  
+	        <![CDATA[AND ROOMNO = #{roomNo}]]>
+	    </if>
+  </select>
+  	
+  <select id="selectListSysRoom"  parameterType="Map" resultMap="BaseResultMap">
+  		SELECT * FROM (SELECT A.*, ROWNUM RN FROM 
+	    (SELECT * FROM sys_room where 1=1
+	    <if test="roomNo!= null">  
+	        <![CDATA[AND ROOMNO = #{roomNo}]]>
+	    </if>
+	    <![CDATA[)A WHERE ROWNUM <= #{stop})
+		WHERE RN >= #{start}]]>
+  </select>
+  
+  <update id="updateSysRoom" parameterType="SysRoom">
+  		update sys_room
+  		<set >  
+      		<if test="roomNo != null" >  
+        		ROOMNO = #{roomNo},  
+      		</if>  
+      		<if test="roomType != null" >  
+        		ROOMTYPE = #{roomType},  
+      		</if>
+      		<if test="roomStatus != null" >  
+        		ROOMSTATUS = #{roomStatus},  
+      		</if>  
+	      	<if test="roomRealNumber != null" >  
+	        	ROOMREALNUMBER = #{roomRealNumber},  
+	      	</if>  
+    	</set>  
+    	where ID = #{id}  
+  </update>
+  
+</mapper>

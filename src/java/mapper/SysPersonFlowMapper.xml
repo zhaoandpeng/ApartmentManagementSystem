@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="cn.com.mrs.zhao.dao.SysPersonFlowMapper">  
+    <resultMap id="BaseResultMap" type="SysPersonFlow" >
+	    <id column="ID" property="id"/>
+	    <result column="PERSON_ID" property="personId" jdbcType="BIGINT"/>
+	    <result column="PERSON_NAME" property="personName"/>
+	    <result column="PERSON_RENT" property="personRent"/>
+	    <result column="CREATETIME" property="createTime"/>
+	    <result column="ROOMNO" property="roomNo"/>
+	    <result column="LEAVETIME" property="leaveTime"/>
+  	</resultMap>
+  	
+  	<insert id="insertPayRent" parameterType="SysPersonFlow">
+  		<selectKey keyProperty="id" order="BEFORE" resultType="long">
+    	select SYS_PERSON_FLOW_SEQ.nextval from dual
+   		</selectKey>  
+        insert into sys_person_flow
+        values(#{id},#{personId},#{personName},#{personRent},#{createTime},#{roomNo},#{leaveTime})
+  	</insert>
+  	
+  	<select id="selectSimplePersonFlow" resultMap="BaseResultMap" parameterType="long">
+  		select B.* from (select A.* from SYS_PERSON_FLOW A
+  		<where>
+  			<if test="_parameter!=null">
+  				PERSON_ID = #{_parameter}
+  			</if>
+  		</where>
+  		<![CDATA[ORDER BY A.CREATETIME ASC)B WHERE ROWNUM=1]]>
+  	</select>
+  	
+  	<update id="updateSysPersonFlow" parameterType="SysPersonFlow">
+  		update sys_person_flow
+  		<set >  
+      		<if test="personId != null" >  
+        		PERSON_ID = #{personId},  
+      		</if>  
+      		<if test="personName != null" >  
+        		PERSON_NAME = #{personName},  
+      		</if>  
+      		<if test="personRent != null" >  
+        		PERSON_RENT = #{personRent},  
+      		</if>  
+	      	<if test="createTime != null" >  
+	        	CREATETIME = #{createTime},  
+	      	</if>  
+      		<if test="roomNo != null" >  
+        		ROOMNO = #{roomNo},  
+      		</if>  
+      		<if test="leaveTime != null" >  
+        		LEAVETIME = #{leaveTime},  
+      		</if>  
+    	</set>  
+    	where ID = #{id}  
+  	</update>
+  	
+  	<delete id="delPayMentFlow" parameterType="Long">
+  		delete from sys_person_flow where ID = #{id}
+  	</delete>
+  	
+  	<select id="selectCountSysPersonFlow" resultType="int" parameterType="Map">
+  		select count(*) from sys_person_flow where 1=1
+    	<if test="personName != null">
+    		<![CDATA[AND PERSON_NAME = #{personName}]]>
+    	</if>
+  	</select>
+  	
+  	<select id="selectListSysPersonFlow"  parameterType="Map" resultMap="BaseResultMap">
+  		SELECT * FROM (SELECT A.*, ROWNUM RN FROM 
+	    (SELECT * FROM SYS_PERSON_FLOW WHERE 1=1 
+	    <if test="personName!= null">  
+	        <![CDATA[AND PERSON_NAME = #{personName}]]>
+	    </if>
+	    <![CDATA[ORDER BY CREATETIME DESC ) A WHERE ROWNUM <= #{stop})
+		WHERE RN >= #{start}]]>
+  	</select>
+</mapper>

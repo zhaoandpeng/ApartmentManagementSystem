@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="cn.com.mrs.zhao.dao.SysMoneyFlowMapper">  
+    <resultMap id="BaseResultMap" type="SysMoneyFlow" >
+	    <id column="ID" property="id"/>
+	    <result column="TYPE" property="type"/>
+	    <result column="AMOUNT" property="amount"/>
+	    <result column="TEXT" property="text" jdbcType="VARCHAR"/>
+	    <result column="CREATETIME" property="createTime"/>
+	    <result column="PERSON_ID" property="personId" jdbcType="BIGINT"/>
+  	</resultMap>
+  	
+  	<insert id="insertSysMoneyFlow" parameterType="SysMoneyFlow">
+  		<selectKey keyProperty="id" order="BEFORE" resultType="long">
+    	select SYS_MONEY_FLOW_SEQ.nextval from dual
+   		</selectKey>  
+        insert into sys_money_flow
+        values(#{id},#{type},#{amount},#{text,jdbcType=VARCHAR},#{createTime},#{personId,jdbcType=BIGINT})
+  	</insert>
+  	
+  	<delete id="delSysMoneyFlowFlow" parameterType="Long">
+  		delete from sys_money_flow where ID = #{id}
+  	</delete>
+  	
+  	<select id="selectSimpleSysMoneyFlow" resultMap="BaseResultMap" parameterType="long">
+  		select B.* from (select A.* from SYS_MONEY_FLOW A
+  		<where>
+  			<if test="_parameter!=null">
+  				PERSON_ID = #{_parameter}
+  			</if>
+  		</where>
+  		<![CDATA[ORDER BY A.CREATETIME ASC)B WHERE ROWNUM=1]]>
+  	</select>
+  	
+  	<select id="selectCountSysMoneyFlow" resultType="int" parameterType="Map">
+  		select count(*) from sys_money_flow where 1=1
+    	<if test="createTime!=null">
+  			<![CDATA[CREATETIME = #{createTime}]]>
+  		</if>
+  	</select>
+  	
+  	<select id="selectListSysMoneyFlow"  parameterType="Map" resultMap="BaseResultMap">
+  		SELECT * FROM (SELECT A.*, ROWNUM RN FROM 
+	    (SELECT * FROM SYS_MONEY_FLOW WHERE 1=1 
+	    <if test="startTime!= null">  
+	        <![CDATA[AND CREATETIME >= #{startTime}]]>
+	    </if>
+	    <if test="endTime!= null">  
+	        <![CDATA[AND CREATETIME <= #{endTime}]]>
+	    </if>
+	    <![CDATA[ORDER BY CREATETIME DESC ) A WHERE ROWNUM <= #{stop})
+		WHERE RN >= #{start}]]>
+  	</select>
+</mapper>
