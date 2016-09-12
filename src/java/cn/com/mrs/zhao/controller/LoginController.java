@@ -75,7 +75,7 @@ public class LoginController{
 			return "main";
 		}else{
 			model.addAttribute("tip", "用户名或密码错误!");
-			return "/index";
+			return "../../index";
 		}
 	}
 	
