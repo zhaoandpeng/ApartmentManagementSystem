@@ -82,6 +82,13 @@ public class LoginController{
 	//默认首页数据查询
 	@RequestMapping("/getSysPersonData")
 	public String getSysPersonData(Model model,HttpServletRequest request){
+		Cookie[] cookie = request.getCookies();
+		for (int i = 0; i < cookie.length; i++) {
+			Cookie cook = cookie[i];
+			if(cook.getName().equalsIgnoreCase("userName")){ //获取键 
+				model.addAttribute("username", cook.getValue().toString());
+			}
+		}
 		map = new HashMap<String,Object>();
 		String personName = request.getParameter("personName");
 		String pageNoTemp = request.getParameter("pageNo");
