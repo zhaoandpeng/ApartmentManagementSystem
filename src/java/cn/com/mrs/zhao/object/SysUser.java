@@ -15,6 +15,12 @@ public class SysUser implements Serializable{
 	
 	private String password;
 
+	public SysUser(Long i, String string, String string2) {
+		this.id=i;
+		this.userName = string;
+		this.password = string2;
+	}
+
 	public Long getId() {
 		return id;
 	}
